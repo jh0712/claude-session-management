@@ -1,15 +1,49 @@
-# claude-session-management
+# Claude Session Manager
 
-To install dependencies:
+Browse, search, and resume your Claude Code sessions from a web UI.
+
+## Features
+
+- **Session list** — all past sessions sorted by most recent, with project name and first message preview
+- **Full conversation view** — click any session to see the complete chat history including Claude's responses
+- **Full-text search** — searches across project paths, summaries, and full conversation content (including Claude's replies)
+- **Match snippets** — search results show highlighted context around matched text
+- **Resume command** — one-click copy of `claude --resume <id>` for any session
+- **Project filter** — filter sessions by project name
+
+## Requirements
+
+- [Bun](https://bun.sh) v1.3+
+- [Claude Code](https://claude.ai/code) — reads session data from `~/.claude/`
+
+## Setup
 
 ```bash
 bun install
+bun run dev     # with hot reload
+# or
+bun run start   # production
 ```
 
-To run:
+Open http://localhost:3456
 
-```bash
-bun run index.ts
+## How it works
+
+Reads two data sources from `~/.claude/`:
+
+| Source | Content |
+|--------|---------|
+| `history.jsonl` | All user inputs with session ID, project path, timestamp |
+| `projects/<slug>/<sessionId>.jsonl` | Full conversation files (user + Claude messages) |
+
+Sessions without a conversation file (older sessions) still appear in the list but only show user messages.
+
+## Project structure
+
 ```
-
-This project was created using `bun init` in bun v1.3.2. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+src/
+  server.ts                  # Express entry point (port 3456)
+  routes/sessions.ts         # GET /api/sessions, GET /api/sessions/:id
+  services/sessionParser.ts  # Parses ~/.claude data
+  public/index.html          # Frontend UI
+```
