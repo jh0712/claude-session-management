@@ -2,6 +2,17 @@
 
 Browse, search, and resume your Claude Code sessions from a web UI.
 
+## Screenshots
+
+![Dashboard](docs/screenshot-dashboard.png)
+*Session list with project filter and search*
+
+![Project Filter](docs/screenshot-dropdown.png)
+*Filter sessions by project*
+
+![Conversation History](docs/screenshot-conversation.png)
+*Full conversation history with resume command*
+
 ## Features
 
 - **Session list** — all past sessions sorted by most recent, with project name and first message preview
