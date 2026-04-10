@@ -21,6 +21,7 @@ Browse, search, and resume your Claude Code sessions from a web UI.
 - **Match snippets** — search results show highlighted context around matched text
 - **Resume command** — one-click copy of `claude --resume <id>` for any session
 - **Project filter** — filter sessions by project name
+- **Daily usage statistics** — token usage dashboard showing input/output/cache tokens, message count, and per-session breakdown with date picker
 
 ## Requirements
 
@@ -55,6 +56,7 @@ Sessions without a conversation file (older sessions) still appear in the list b
 src/
   server.ts                  # Express entry point (port 3456)
   routes/sessions.ts         # GET /api/sessions, GET /api/sessions/:id
+  routes/usage.ts            # GET /api/usage?date=YYYY-MM-DD
   services/sessionParser.ts  # Parses ~/.claude data
   public/index.html          # Frontend UI
 ```
