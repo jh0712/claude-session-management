@@ -332,6 +332,116 @@
       color: var(--text-muted);
     }
 
+    /* Daily usage stats */
+    .usage-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+    }
+
+    .usage-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .usage-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .usage-date {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .usage-date input {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      padding: 2px 8px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .usage-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .usage-stat {
+      text-align: center;
+    }
+
+    .usage-stat-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1.2;
+    }
+
+    .usage-stat-value.green { color: var(--green); }
+    .usage-stat-value.orange { color: var(--orange); }
+
+    .usage-stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .usage-sessions {
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+    }
+
+    .usage-sessions-toggle {
+      background: none;
+      border: none;
+      color: var(--accent);
+      font-size: 12px;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .usage-sessions-toggle:hover { text-decoration: underline; }
+
+    .usage-session-list {
+      display: none;
+      margin-top: 8px;
+      font-size: 13px;
+    }
+
+    .usage-session-list.open { display: block; }
+
+    .usage-session-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .usage-session-row:last-child { border-bottom: none; }
+
+    .usage-session-name {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .usage-session-tokens {
+      color: var(--text-muted);
+      font-family: monospace;
+      font-size: 12px;
+    }
+
     .match-snippets {
       margin-top: 8px;
       display: flex;
@@ -364,6 +474,8 @@
       <h1>Claude Session Manager</h1>
       <div class="stats" id="stats"></div>
     </header>
+
+    <div class="usage-card" id="usageCard" style="display:none"></div>
 
     <div class="toolbar">
       <input
@@ -402,6 +514,102 @@
     let displayedSessions = [];
     let searchDebounceTimer = null;
     let currentQuery = "";
+
+    function formatTokens(n) {
+      if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
+      if (n >= 1_000) return (n / 1_000).toFixed(1) + "K";
+      return String(n);
+    }
+
+    async function loadUsage(date) {
+      const url = date ? `/api/usage?date=${date}` : "/api/usage";
+      const res = await fetch(url);
+      const data = await res.json();
+      renderUsage(data);
+    }
+
+    function renderUsage(data) {
+      const card = document.getElementById("usageCard");
+      if (data.sessionCount === 0 && !document.getElementById("usageDatePicker")) {
+        card.style.display = "block";
+        card.innerHTML = `
+          <div class="usage-header">
+            <span class="usage-title">今日使用量</span>
+            <span class="usage-date">
+              <input type="date" id="usageDatePicker" value="${data.date}" />
+            </span>
+          </div>
+          <div style="text-align:center;color:var(--text-muted);padding:8px 0;font-size:13px">今天尚無使用紀錄</div>
+        `;
+        document.getElementById("usageDatePicker").addEventListener("change", (e) => {
+          loadUsage(e.target.value);
+        });
+        return;
+      }
+
+      card.style.display = "block";
+      const sessionsHtml = data.sessions.map(s => `
+        <div class="usage-session-row">
+          <span class="usage-session-name">${escapeHtml(s.projectName)}</span>
+          <span class="usage-session-tokens">
+            ${formatTokens(s.totalTokens)} tokens
+            (${s.messageCount} 則回覆, ${escapeHtml(s.model || "unknown")})
+          </span>
+        </div>
+      `).join("");
+
+      card.innerHTML = `
+        <div class="usage-header">
+          <span class="usage-title">當日使用量</span>
+          <span class="usage-date">
+            <input type="date" id="usageDatePicker" value="${data.date}" />
+          </span>
+        </div>
+        <div class="usage-grid">
+          <div class="usage-stat">
+            <div class="usage-stat-value">${data.sessionCount}</div>
+            <div class="usage-stat-label">Sessions</div>
+          </div>
+          <div class="usage-stat">
+            <div class="usage-stat-value green">${data.totalMessages}</div>
+            <div class="usage-stat-label">Claude 回覆</div>
+          </div>
+          <div class="usage-stat">
+            <div class="usage-stat-value orange">${formatTokens(data.totalInputTokens)}</div>
+            <div class="usage-stat-label">Input Tokens</div>
+          </div>
+          <div class="usage-stat">
+            <div class="usage-stat-value orange">${formatTokens(data.totalOutputTokens)}</div>
+            <div class="usage-stat-label">Output Tokens</div>
+          </div>
+          <div class="usage-stat">
+            <div class="usage-stat-value">${formatTokens(data.totalCacheCreationTokens)}</div>
+            <div class="usage-stat-label">Cache Write</div>
+          </div>
+          <div class="usage-stat">
+            <div class="usage-stat-value">${formatTokens(data.totalCacheReadTokens)}</div>
+            <div class="usage-stat-label">Cache Read</div>
+          </div>
+        </div>
+        <div class="usage-sessions">
+          <button class="usage-sessions-toggle" id="usageToggle">
+            展開各 Session 明細
+          </button>
+          <div class="usage-session-list" id="usageSessionList">
+            ${sessionsHtml}
+          </div>
+        </div>
+      `;
+
+      document.getElementById("usageDatePicker").addEventListener("change", (e) => {
+        loadUsage(e.target.value);
+      });
+      document.getElementById("usageToggle").addEventListener("click", () => {
+        const list = document.getElementById("usageSessionList");
+        const open = list.classList.toggle("open");
+        document.getElementById("usageToggle").textContent = open ? "收合明細" : "展開各 Session 明細";
+      });
+    }
 
     async function loadSessions() {
       const res = await fetch("/api/sessions");
@@ -604,6 +812,7 @@
     document.addEventListener("keydown", e => { if (e.key === "Escape") closeDetail(); });
 
     loadSessions();
+    loadUsage();
   </script>
 </body>
 </html>

@@ -321,6 +321,128 @@ export function searchSessions(query: string): SessionSearchResult[] {
   return results;
 }
 
+export interface DailyUsageSession {
+  sessionId: string;
+  project: string;
+  projectName: string;
+  inputTokens: number;
+  outputTokens: number;
+  cacheCreationTokens: number;
+  cacheReadTokens: number;
+  totalTokens: number;
+  messageCount: number;
+  model: string;
+}
+
+export interface DailyUsage {
+  date: string;
+  totalInputTokens: number;
+  totalOutputTokens: number;
+  totalCacheCreationTokens: number;
+  totalCacheReadTokens: number;
+  totalTokens: number;
+  totalMessages: number;
+  sessionCount: number;
+  sessions: DailyUsageSession[];
+}
+
+export function getDailyUsage(dateStr?: string): DailyUsage {
+  const targetDate = dateStr || new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  const dayStart = new Date(targetDate + "T00:00:00").getTime();
+  const dayEnd = new Date(targetDate + "T23:59:59.999").getTime();
+
+  const entries = parseHistoryFile();
+  // Find sessions active on the target date
+  const sessionIds = new Set<string>();
+  const sessionProjects = new Map<string, string>();
+
+  for (const entry of entries) {
+    if (entry.timestamp >= dayStart && entry.timestamp <= dayEnd) {
+      sessionIds.add(entry.sessionId);
+      if (!sessionProjects.has(entry.sessionId)) {
+        sessionProjects.set(entry.sessionId, entry.project);
+      }
+    }
+  }
+
+  const sessions: DailyUsageSession[] = [];
+  let totalInput = 0, totalOutput = 0, totalCacheCreate = 0, totalCacheRead = 0, totalMessages = 0;
+
+  for (const sessionId of sessionIds) {
+    const project = sessionProjects.get(sessionId) || "";
+    const convFile = findConversationFile(sessionId, project);
+    if (!convFile) continue;
+
+    let sessionInput = 0, sessionOutput = 0, sessionCacheCreate = 0, sessionCacheRead = 0;
+    let sessionMsgCount = 0;
+    let model = "";
+
+    try {
+      const lines = readFileSync(convFile, "utf-8").trim().split("\n").filter(Boolean);
+      for (const line of lines) {
+        let data: Record<string, unknown>;
+        try { data = JSON.parse(line); } catch { continue; }
+
+        const ts = data.timestamp as string;
+        if (!ts) continue;
+        const msgTime = new Date(ts).getTime();
+        if (msgTime < dayStart || msgTime > dayEnd) continue;
+
+        if (data.type === "assistant" && data.message) {
+          const msg = data.message as Record<string, unknown>;
+          const usage = msg.usage as Record<string, number> | undefined;
+          if (usage) {
+            sessionInput += usage.input_tokens || 0;
+            sessionOutput += usage.output_tokens || 0;
+            sessionCacheCreate += usage.cache_creation_input_tokens || 0;
+            sessionCacheRead += usage.cache_read_input_tokens || 0;
+            sessionMsgCount++;
+            if (!model && msg.model) model = msg.model as string;
+          }
+        }
+      }
+    } catch {
+      continue;
+    }
+
+    if (sessionMsgCount > 0) {
+      const total = sessionInput + sessionOutput + sessionCacheCreate + sessionCacheRead;
+      sessions.push({
+        sessionId,
+        project,
+        projectName: extractProjectName(project),
+        inputTokens: sessionInput,
+        outputTokens: sessionOutput,
+        cacheCreationTokens: sessionCacheCreate,
+        cacheReadTokens: sessionCacheRead,
+        totalTokens: total,
+        messageCount: sessionMsgCount,
+        model,
+      });
+      totalInput += sessionInput;
+      totalOutput += sessionOutput;
+      totalCacheCreate += sessionCacheCreate;
+      totalCacheRead += sessionCacheRead;
+      totalMessages += sessionMsgCount;
+    }
+  }
+
+  // Sort by total tokens descending
+  sessions.sort((a, b) => b.totalTokens - a.totalTokens);
+
+  return {
+    date: targetDate,
+    totalInputTokens: totalInput,
+    totalOutputTokens: totalOutput,
+    totalCacheCreationTokens: totalCacheCreate,
+    totalCacheReadTokens: totalCacheRead,
+    totalTokens: totalInput + totalOutput + totalCacheCreate + totalCacheRead,
+    totalMessages,
+    sessionCount: sessions.length,
+    sessions,
+  };
+}
+
 export function getSessionById(id: string): (SessionInfo & { messages: SessionMessage[] }) | undefined {
   const entries = parseHistoryFile();
   const activeSessions = getActiveSessions();
