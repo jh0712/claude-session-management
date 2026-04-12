@@ -421,25 +421,26 @@
 
     .usage-session-list.open { display: block; }
 
-    .usage-session-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 4px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .usage-session-row:last-child { border-bottom: none; }
-
     .usage-session-name {
       color: var(--accent);
       font-weight: 500;
+    }
+
+    .usage-session-id {
+      font-family: monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-left: 6px;
+      background: var(--bg);
+      padding: 1px 5px;
+      border-radius: 3px;
     }
 
     .usage-session-tokens {
       color: var(--text-muted);
       font-family: monospace;
       font-size: 12px;
+      white-space: nowrap;
     }
 
     .match-snippets {
@@ -466,6 +467,220 @@
       color: var(--accent);
       border-radius: 2px;
     }
+
+    /* Session comparison */
+    .usage-session-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+      gap: 8px;
+    }
+
+    .usage-session-row:last-child { border-bottom: none; }
+
+    .usage-session-checkbox {
+      width: 15px;
+      height: 15px;
+      cursor: pointer;
+      accent-color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .compare-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      font-style: italic;
+    }
+
+    .compare-btn {
+      margin-top: 10px;
+      padding: 6px 16px;
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      border-radius: 5px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+      display: none;
+    }
+
+    .compare-btn:hover { background: var(--accent-hover); }
+
+    /* Comparison modal */
+    .compare-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .compare-overlay.open { display: flex; }
+
+    .compare-modal {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      width: 860px;
+      max-width: 96vw;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 28px;
+    }
+
+    .compare-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .compare-modal-header h2 { font-size: 18px; font-weight: 700; }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .compare-col {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .compare-alias-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .compare-alias-field {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .compare-alias-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .compare-alias-input {
+      padding: 7px 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      color: var(--text);
+      font-size: 13px;
+      outline: none;
+      width: 100%;
+    }
+
+    .compare-alias-input:focus { border-color: var(--accent); }
+
+    .compare-col-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 12px;
+      word-break: break-word;
+    }
+
+    .compare-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      padding: 4px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .compare-row:last-child { border-bottom: none; }
+
+    .compare-row-label { color: var(--text-muted); }
+
+    .compare-row-value { font-family: monospace; color: var(--text); }
+
+    .compare-row-value.higher { color: var(--orange); font-weight: 600; }
+    .compare-row-value.lower  { color: var(--green);  font-weight: 600; }
+
+    .compare-analysis {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .compare-analysis h3 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+
+    .analysis-item {
+      font-size: 13px;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .analysis-item:last-child { border-bottom: none; }
+
+    .analysis-tag {
+      display: inline-block;
+      font-size: 11px;
+      padding: 1px 7px;
+      border-radius: 3px;
+      margin-right: 6px;
+      font-weight: 600;
+    }
+
+    .tag-info  { background: rgba(88,166,255,0.2);  color: var(--accent); }
+    .tag-warn  { background: rgba(210,153,34,0.2);  color: var(--orange); }
+    .tag-good  { background: rgba(63,185,80,0.2);   color: var(--green);  }
+
+    .compare-bar-wrap {
+      margin-top: 8px;
+    }
+
+    .compare-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 3px;
+    }
+
+    .compare-bar-track {
+      height: 8px;
+      background: var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+
+    .compare-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.4s;
+    }
+
+    .bar-a { background: var(--accent); }
+    .bar-b { background: var(--green); }
   </style>
 </head>
 <body>
@@ -509,11 +724,26 @@
 
   <div class="copied-toast" id="toast">已複製 resume 指令</div>
 
+  <!-- Session comparison modal -->
+  <div class="compare-overlay" id="compareOverlay">
+    <div class="compare-modal">
+      <div class="compare-modal-header">
+        <h2>Session Token 使用量比較</h2>
+        <button class="close-btn" id="closeCompare">&times;</button>
+      </div>
+      <div class="compare-alias-row" id="compareAliasRow"></div>
+      <div class="compare-grid" id="compareGrid"></div>
+      <div class="compare-analysis" id="compareAnalysis"></div>
+    </div>
+  </div>
+
   <script>
     let allSessions = [];
     let displayedSessions = [];
     let searchDebounceTimer = null;
     let currentQuery = "";
+    let currentUsageSessions = [];
+    let selectedCompareIds = [];
 
     function formatTokens(n) {
       if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -529,6 +759,9 @@
     }
 
     function renderUsage(data) {
+      currentUsageSessions = data.sessions || [];
+      selectedCompareIds = [];
+
       const card = document.getElementById("usageCard");
       if (data.sessionCount === 0 && !document.getElementById("usageDatePicker")) {
         card.style.display = "block";
@@ -548,9 +781,13 @@
       }
 
       card.style.display = "block";
-      const sessionsHtml = data.sessions.map(s => `
+      const sessionsHtml = data.sessions.map((s, i) => `
         <div class="usage-session-row">
-          <span class="usage-session-name">${escapeHtml(s.projectName)}</span>
+          <input type="checkbox" class="usage-session-checkbox" data-sid="${escapeHtml(s.sessionId)}" id="cmp-${i}" />
+          <span style="flex:1;min-width:0">
+            <span class="usage-session-name">${escapeHtml(s.projectName)}</span>
+            <span class="usage-session-id">${escapeHtml(s.sessionId)}</span>
+          </span>
           <span class="usage-session-tokens">
             ${formatTokens(s.totalTokens)} tokens
             (${s.messageCount} 則回覆, ${escapeHtml(s.model || "unknown")})
@@ -597,6 +834,8 @@
           </button>
           <div class="usage-session-list" id="usageSessionList">
             ${sessionsHtml}
+            <div class="compare-hint" id="compareHint">勾選任兩個 session 以進行比較</div>
+            <button class="compare-btn" id="compareBtn">比較選取的 Sessions</button>
           </div>
         </div>
       `;
@@ -609,6 +848,167 @@
         const open = list.classList.toggle("open");
         document.getElementById("usageToggle").textContent = open ? "收合明細" : "展開各 Session 明細";
       });
+
+      // Checkbox logic
+      card.querySelectorAll(".usage-session-checkbox").forEach(cb => {
+        cb.addEventListener("change", () => {
+          if (cb.checked) {
+            if (selectedCompareIds.length >= 2) {
+              cb.checked = false;
+              return;
+            }
+            selectedCompareIds.push(cb.dataset.sid);
+          } else {
+            selectedCompareIds = selectedCompareIds.filter(id => id !== cb.dataset.sid);
+          }
+          const btn = document.getElementById("compareBtn");
+          const hint = document.getElementById("compareHint");
+          if (selectedCompareIds.length === 2) {
+            btn.style.display = "inline-block";
+            hint.textContent = "已選取 2 個 sessions，點擊下方按鈕進行比較";
+          } else {
+            btn.style.display = "none";
+            hint.textContent = `已選取 ${selectedCompareIds.length}/2 個 session`;
+          }
+        });
+      });
+
+      document.getElementById("compareBtn").addEventListener("click", () => {
+        if (selectedCompareIds.length === 2) openCompare(selectedCompareIds[0], selectedCompareIds[1]);
+      });
+    }
+
+    function openCompare(idA, idB) {
+      const a = currentUsageSessions.find(s => s.sessionId === idA);
+      const b = currentUsageSessions.find(s => s.sessionId === idB);
+      if (!a || !b) return;
+
+      const defaultLabel = (s) => `${s.projectName} (${s.sessionId.slice(0, 8)}…)`;
+
+      document.getElementById("compareAliasRow").innerHTML = `
+        <div class="compare-alias-field">
+          <span class="compare-alias-label">Session A <span class="usage-session-id">${escapeHtml(a.sessionId)}</span></span>
+          <input class="compare-alias-input" id="aliasA" placeholder="${escapeHtml(defaultLabel(a))}" />
+        </div>
+        <div class="compare-alias-field">
+          <span class="compare-alias-label">Session B <span class="usage-session-id">${escapeHtml(b.sessionId)}</span></span>
+          <input class="compare-alias-input" id="aliasB" placeholder="${escapeHtml(defaultLabel(b))}" />
+        </div>
+      `;
+
+      const getAlias = (s, inputId) => {
+        const el = document.getElementById(inputId);
+        return (el && el.value.trim()) ? el.value.trim() : defaultLabel(s);
+      };
+
+      const rerender = () => renderCompareContent(a, b, getAlias(a, "aliasA"), getAlias(b, "aliasB"));
+
+      document.getElementById("aliasA").addEventListener("input", rerender);
+      document.getElementById("aliasB").addEventListener("input", rerender);
+
+      rerender();
+      document.getElementById("compareOverlay").classList.add("open");
+    }
+
+    function renderCompareContent(a, b, labelA, labelB) {
+      const label = (s) => s === a ? labelA : labelB;
+
+      const fields = [
+        { key: "totalTokens",         label: "Total Tokens",        higherIsBad: true },
+        { key: "inputTokens",         label: "Input Tokens",        higherIsBad: true },
+        { key: "outputTokens",        label: "Output Tokens",       higherIsBad: false },
+        { key: "cacheCreationTokens", label: "Cache Write Tokens",  higherIsBad: false },
+        { key: "cacheReadTokens",     label: "Cache Read Tokens",   higherIsBad: false },
+        { key: "messageCount",        label: "Messages",            higherIsBad: false },
+      ];
+
+      function colHtml(s, other) {
+        return fields.map(f => {
+          const val = s[f.key] || 0;
+          const otherVal = other[f.key] || 0;
+          let cls = "";
+          if (val > otherVal) cls = f.higherIsBad ? "higher" : "";
+          else if (val < otherVal) cls = f.higherIsBad ? "lower" : "";
+          return `
+            <div class="compare-row">
+              <span class="compare-row-label">${f.label}</span>
+              <span class="compare-row-value ${cls}">${f.key === "messageCount" ? val : formatTokens(val)}</span>
+            </div>`;
+        }).join("");
+      }
+
+      function barPct(valA, valB) {
+        const max = Math.max(valA, valB, 1);
+        return { pctA: (valA / max * 100).toFixed(1), pctB: (valB / max * 100).toFixed(1) };
+      }
+
+      const barFields = [
+        { key: "totalTokens",         label: "Total Tokens" },
+        { key: "outputTokens",        label: "Output Tokens" },
+        { key: "cacheReadTokens",     label: "Cache Read" },
+        { key: "cacheCreationTokens", label: "Cache Write" },
+      ];
+
+      const barsHtml = barFields.map(f => {
+        const vA = a[f.key] || 0, vB = b[f.key] || 0;
+        const { pctA, pctB } = barPct(vA, vB);
+        return `
+          <div class="compare-bar-wrap">
+            <div class="compare-bar-label"><span>${escapeHtml(labelA)}</span><span>${formatTokens(vA)}</span></div>
+            <div class="compare-bar-track"><div class="compare-bar-fill bar-a" style="width:${pctA}%"></div></div>
+            <div class="compare-bar-label"><span>${escapeHtml(labelB)}</span><span>${formatTokens(vB)}</span></div>
+            <div class="compare-bar-track"><div class="compare-bar-fill bar-b" style="width:${pctB}%"></div></div>
+          </div>`;
+      }).join("");
+
+      const analyses = [];
+      const totalDiff = a.totalTokens && b.totalTokens
+        ? (Math.abs(a.totalTokens - b.totalTokens) / Math.max(a.totalTokens, b.totalTokens) * 100).toFixed(1)
+        : 0;
+      const bigger = a.totalTokens >= b.totalTokens ? a : b;
+      const smaller = a.totalTokens >= b.totalTokens ? b : a;
+      analyses.push(`<span class="analysis-tag tag-info">總量</span><b>${escapeHtml(label(bigger))}</b> 的 token 用量比 <b>${escapeHtml(label(smaller))}</b> 多 <b>${totalDiff}%</b>（${formatTokens(bigger.totalTokens)} vs ${formatTokens(smaller.totalTokens)}）`);
+
+      const cacheRatioA = a.totalTokens ? ((a.cacheReadTokens || 0) / a.totalTokens * 100).toFixed(1) : 0;
+      const cacheRatioB = b.totalTokens ? ((b.cacheReadTokens || 0) / b.totalTokens * 100).toFixed(1) : 0;
+      const betterCache = parseFloat(cacheRatioA) >= parseFloat(cacheRatioB) ? a : b;
+      const worseCacheRatio = parseFloat(cacheRatioA) < parseFloat(cacheRatioB) ? cacheRatioA : cacheRatioB;
+      const betterCacheRatio = Math.max(parseFloat(cacheRatioA), parseFloat(cacheRatioB)).toFixed(1);
+      analyses.push(`<span class="analysis-tag tag-good">Cache</span><b>${escapeHtml(label(betterCache))}</b> 的 cache read 比例較高（${betterCacheRatio}%），有效降低實際 token 消耗；對比另一方 ${worseCacheRatio}%`);
+
+      const outRatioA = a.inputTokens ? ((a.outputTokens || 0) / Math.max(a.inputTokens, 1)).toFixed(2) : 0;
+      const outRatioB = b.inputTokens ? ((b.outputTokens || 0) / Math.max(b.inputTokens, 1)).toFixed(2) : 0;
+      analyses.push(`<span class="analysis-tag tag-info">Output/Input</span><b>${escapeHtml(labelA)}</b>：${outRatioA}x，<b>${escapeHtml(labelB)}</b>：${outRatioB}x — 比值高代表 Claude 回覆較長`);
+
+      const tpmA = a.messageCount ? Math.round(a.totalTokens / a.messageCount) : 0;
+      const tpmB = b.messageCount ? Math.round(b.totalTokens / b.messageCount) : 0;
+      const heavierMsg = tpmA >= tpmB ? a : b;
+      analyses.push(`<span class="analysis-tag tag-warn">每則成本</span><b>${escapeHtml(labelA)}</b> 每則訊息 ${formatTokens(tpmA)} tokens，<b>${escapeHtml(labelB)}</b> ${formatTokens(tpmB)} tokens — <b>${escapeHtml(label(heavierMsg))}</b> 每次對話成本較高`);
+
+      if ((a.cacheCreationTokens || 0) > 0 || (b.cacheCreationTokens || 0) > 0) {
+        const highCreate = (a.cacheCreationTokens || 0) >= (b.cacheCreationTokens || 0) ? a : b;
+        analyses.push(`<span class="analysis-tag tag-info">Cache 建立</span><b>${escapeHtml(label(highCreate))}</b> 的 cache 寫入量較多（${formatTokens(highCreate.cacheCreationTokens)}），代表本次對話產生較多新 context 快取`);
+      }
+
+      document.getElementById("compareGrid").innerHTML = `
+        <div class="compare-col">
+          <div class="compare-col-title">${escapeHtml(labelA)}</div>
+          ${colHtml(a, b)}
+        </div>
+        <div class="compare-col">
+          <div class="compare-col-title">${escapeHtml(labelB)}</div>
+          ${colHtml(b, a)}
+        </div>
+      `;
+
+      document.getElementById("compareAnalysis").innerHTML = `
+        <h3>分析摘要</h3>
+        ${analyses.map(t => `<div class="analysis-item">${t}</div>`).join("")}
+        <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:14px">
+          <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--text-muted)">Token 分佈視覺化</div>
+          ${barsHtml}
+        </div>
+      `;
     }
 
     async function loadSessions() {
@@ -809,7 +1209,19 @@
     document.getElementById("projectFilter").addEventListener("change", renderSessions);
     document.getElementById("closeDetail").addEventListener("click", closeDetail);
     document.getElementById("overlay").addEventListener("click", closeDetail);
-    document.addEventListener("keydown", e => { if (e.key === "Escape") closeDetail(); });
+    document.getElementById("closeCompare").addEventListener("click", () => {
+      document.getElementById("compareOverlay").classList.remove("open");
+    });
+    document.getElementById("compareOverlay").addEventListener("click", (e) => {
+      if (e.target === document.getElementById("compareOverlay"))
+        document.getElementById("compareOverlay").classList.remove("open");
+    });
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape") {
+        closeDetail();
+        document.getElementById("compareOverlay").classList.remove("open");
+      }
+    });
 
     loadSessions();
     loadUsage();
