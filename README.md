@@ -22,6 +22,8 @@ Browse, search, and resume your Claude Code sessions from a web UI.
 - **Resume command** — one-click copy of `claude --resume <id>` for any session
 - **Project filter** — filter sessions by project name
 - **Daily usage statistics** — token usage dashboard showing input/output/cache tokens, message count, and per-session breakdown with date picker
+- **Session comparison** — select any two sessions from the daily usage view to compare token usage side by side; includes bar chart visualization, and analysis covering total token delta, cache read efficiency, output/input ratio, and per-message cost
+- **Session aliases** — in the comparison modal, assign custom names to each session (Session A / B) so the analysis text and charts use your labels instead of the default project+ID format
 
 ## Requirements
 
