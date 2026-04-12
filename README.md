@@ -13,6 +13,9 @@ Browse, search, and resume your Claude Code sessions from a web UI.
 ![Conversation History](docs/screenshot-conversation.png)
 *Full conversation history with resume command*
 
+![Session Comparison](docs/screenshot-session-comparison.png)
+*Select two sessions from the daily usage view to compare token usage side by side*
+
 ## Features
 
 - **Session list** — all past sessions sorted by most recent, with project name and first message preview
