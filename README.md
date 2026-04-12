@@ -16,6 +16,12 @@ Browse, search, and resume your Claude Code sessions from a web UI.
 ![Session Comparison](docs/screenshot-session-comparison.png)
 *Select two sessions from the daily usage view to compare token usage side by side*
 
+![Session Comparison with Aliases](docs/screenshot-comparison-alias.png)
+*Assign custom aliases to each session — all analysis text and charts update instantly*
+
+![Session Comparison Charts](docs/screenshot-comparison-charts.png)
+*Token distribution bar charts and detailed analysis summary*
+
 ## Features
 
 - **Session list** — all past sessions sorted by most recent, with project name and first message preview
